@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 
 
-class Profile(models.Model):
+class MyProfile(models.Model):
     name = models.CharField(max_length=100)
     user = models.OneToOneField(to=User, on_delete=CASCADE)
     status = models.CharField(max_length=20, default="single", choices=(("single","single"),
@@ -21,7 +21,7 @@ class Profile(models.Model):
         return "%s (%s)" % (self.user, self.age)
 
 
-class Post(models.Model):
+class MyPost(models.Model):
     pic = models.ImageField(upload_to="images\\", null=True)
     subject = models.CharField(max_length=200)
     msg = models.TextField(null=True, blank=True)
@@ -32,8 +32,8 @@ class Post(models.Model):
         return "%s " % self.subject
 
 
-class Comment(models.Model):
-    post = models.ForeignKey(to=Post, on_delete=CASCADE)
+class PostComment(models.Model):
+    post = models.ForeignKey(to=MyPost, on_delete=CASCADE)
     msg = models.TextField()
     cr_date = models.DateTimeField(auto_now_add=True)
     commented_by = models.ForeignKey(to=User, on_delete=CASCADE)
@@ -42,3 +42,20 @@ class Comment(models.Model):
 
     def __str__(self):
         return "%s " % self.msg
+
+
+class PostLike(models.Model):
+    post = models.ForeignKey(to=MyPost, on_delete=CASCADE)
+    liked_by = models.ForeignKey(to=User, on_delete=CASCADE)
+    cr_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "%s " % self.liked_by
+
+
+class FollowUser(models.Model):
+    profile = models.ForeignKey(to=MyProfile, on_delete=CASCADE)
+    followed_by = models.ForeignKey(to=User, on_delete=CASCADE)
+
+    def __str__(self):
+        return "%s " % self.followed_by
